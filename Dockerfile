@@ -1,10 +1,12 @@
 FROM ubuntu:18.04
 
-MAINTAINER Pabitra Adhikari <pabitraadhikari@gmail.com>
+# MAINTAINER Pabitra Adhikari <pabitraadhikari@gmail.com>
 
 # build with docker build --build-arg PETA_VERSION=2019.1 --build-arg PETA_RUN_FILE=petalinux-v2019.1-final-installer.run -t petalinux:2019.1 .
 
-ARG UBUNTU_MIRROR=mirror.math.ucdavis.edu
+# ARG UBUNTU_MIRROR=mirror.aliyun.com
+RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+RUN sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
 
 #install dependences:
 RUN sed -i.bak s/archive.ubuntu.com/${UBUNTU_MIRROR}/g /etc/apt/sources.list && \
@@ -71,7 +73,7 @@ RUN adduser --disabled-password --gecos '' vivado && \
   usermod -aG sudo vivado && \
   echo "vivado ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-COPY accept-eula.sh ${PETA_RUN_FILE} /
+COPY accept-eula.sh /${PETA_RUN_FILE} /
 
 # run the install
 RUN chmod a+rx /${PETA_RUN_FILE} && \
@@ -80,14 +82,14 @@ RUN chmod a+rx /${PETA_RUN_FILE} && \
   chmod 777 /tmp /opt/Xilinx && \
   cd /tmp && \
   sudo -u vivado /accept-eula.sh /${PETA_RUN_FILE} /opt/Xilinx/petalinux && \
-  rm -f /${PETA_RUN_FILE} /accept-eula.sh 
+  rm -f /${PETA_RUN_FILE} /accept-eula.sh
 
 RUN cd /tmp &&  git clone https://github.com/pengutronix/genimage.git &&\
   cd /tmp/genimage &&\
   ./autogen.sh &&\
   ./configure &&\
   make &&\
-  sudo make install  
+  sudo make install
 
 
 
