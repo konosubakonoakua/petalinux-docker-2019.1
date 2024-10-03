@@ -1,13 +1,11 @@
 FROM ubuntu:18.04
 
-MAINTAINER z4yx <z4yx@users.noreply.github.com>
-
 # build with "docker build --build-arg PETA_VERSION=2020.2 --build-arg PETA_RUN_FILE=petalinux-v2020.2-final-installer.run -t petalinux:2020.2 ."
 
 # install dependences:
 
 ARG UBUNTU_MIRROR
-RUN [ -z "${UBUNTU_MIRROR}" ] || sed -i.bak s/archive.ubuntu.com/${UBUNTU_MIRROR}/g /etc/apt/sources.list 
+RUN [ -z "${UBUNTU_MIRROR}" ] || sed -i.bak s/archive.ubuntu.com/${UBUNTU_MIRROR}/g /etc/apt/sources.list
 
 RUN apt-get update &&  DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
   build-essential \
@@ -56,14 +54,17 @@ RUN apt-get update &&  DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
   bc \
   u-boot-tools \
   python \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+  vim \
+  curl \
+  tmux \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN dpkg --add-architecture i386 &&  apt-get update &&  \
-      DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
-      zlib1g:i386 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
+  zlib1g:i386 \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 
 ARG PETA_VERSION
